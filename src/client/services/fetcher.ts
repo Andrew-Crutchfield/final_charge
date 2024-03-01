@@ -17,11 +17,21 @@ function fetcher<T = any>(url: string, method: ValidMethods = 'GET', rawData?: a
 
     return new Promise<T>(async (resolve) => {
         try {
-            const res = await fetch(process.env.SERVER_URL + '/api/Books', options);
+            const res = await fetch(process.env.SERVER_URL + url, options);
             const data = await res.json();
 
             if (res.ok) {
                 resolve(data);
+            } else if (res.status === 404) {
+                console.error(`Request to ${url} failed with status 404 (Not Found)`);
+                console.error(data);
+
+                Swal.fire({
+                    title: 'Resource not found :(',
+                    icon: 'error',
+                    text: data.message || 'Unknown error',
+                    timer: 6000,
+                });
             } else {
                 console.error(`Request to ${url} failed with status ${res.status}`);
                 console.error(data);

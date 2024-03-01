@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { POST } from '../services/fetcher';
 
-const HomePage: React.FC = () => {
+const Home: React.FC = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,7 +13,7 @@ const HomePage: React.FC = () => {
       const response = await POST('/auth/login', { email, password });
       if (response.token) {
         localStorage.setItem('token', response.token);
-        navigate('/bookdetails');
+        navigate('/details');  
       } else {
         setErrorMessage(response.message || 'Failed to log in');
       }
@@ -32,7 +32,7 @@ const HomePage: React.FC = () => {
       const response = await POST('/auth/register', { email, password });
       if (response.token) {
         localStorage.setItem('token', response.token);
-        navigate('/bookdetails');
+        navigate('/details');  
       } else {
         setErrorMessage('Failed to register');
       }
@@ -58,4 +58,4 @@ const HomePage: React.FC = () => {
   );
 };
 
-export default HomePage;
+export default Home;
