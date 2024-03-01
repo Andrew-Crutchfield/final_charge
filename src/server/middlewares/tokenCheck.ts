@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import jwt from 'jsonwebtoken';
-import config from '../config';
+import config from '../config/config';
 import { Payload } from '../types';
 
 export const tokenCheck: RequestHandler = (req, res, next) => {
@@ -13,7 +13,7 @@ export const tokenCheck: RequestHandler = (req, res, next) => {
     const [type, token] = authHeader.split(' ');
 
     if (!type || !token || type.toLowerCase() !== 'bearer') {
-        return res.status(401).json({ message: 'Missing token or non-bearer token present' });
+        return res.status(401).json({ message: 'Missing token' });
     }
 
     try {
@@ -21,6 +21,6 @@ export const tokenCheck: RequestHandler = (req, res, next) => {
         req.user = payload;
         next();
     } catch (error) {
-        return res.status(401).json({ message: 'Bad token' });
+        return res.status(401).json({ message: 'Expired token' });
     }
 };
