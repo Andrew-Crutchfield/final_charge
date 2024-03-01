@@ -49,7 +49,7 @@ export const loginUser = async (req: Request, res: Response) => {
     const authenticationResult = await authenticateUser(email, password);
 
     if (authenticationResult.success) {
-      const token: string = jwt.sign({ email }, config.jwt.secret, { expiresIn: config.jwt.expiration });
+      const token: string = jwt.sign({ email, role: authenticationResult.user?.role }, config.jwt.secret, { expiresIn: config.jwt.expiration });
       console.log('Successfully logged in. Sending token:', token);
       res.json({ token });
     } else {
@@ -78,7 +78,7 @@ export const registerUser = async (req: Request, res: Response) => {
     const affectedRows: number = queryResult.reduce((sum, result) => sum + (result.affectedRows || 0), 0);
 
     if (affectedRows > 0) {
-      const token: string = jwt.sign({ email }, config.jwt.secret, { expiresIn: config.jwt.expiration });
+      const token: string = jwt.sign({ email, role: 'user' }, config.jwt.secret, { expiresIn: config.jwt.expiration });
       res.json({ token });
     } else {
       res.status(400).json({ message: 'Failed to register' });
