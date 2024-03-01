@@ -5,7 +5,6 @@ import config from '../config/config';
 import { query } from '../db/db';
 import { User } from '../types/index';
 
-
 export const authenticateUser = async (email: string, password: string): Promise<{ success: boolean; user?: User }> => {
     try {
         const [results] = await query<User[]>('SELECT id, email, password, role, created_at FROM Users WHERE email = ?', [email]);
@@ -14,7 +13,7 @@ export const authenticateUser = async (email: string, password: string): Promise
             return { success: false, user: undefined };
         }
 
-        const user = results[0];
+        const user: User = results[0];
 
         if (!user || !user.password) {
             return { success: false, user: undefined };
@@ -32,6 +31,7 @@ export const authenticateUser = async (email: string, password: string): Promise
         return { success: false, user: undefined };
     }
 };
+
 
 export const loginUser = async (req: Request, res: Response) => {
     try {

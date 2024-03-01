@@ -17,27 +17,31 @@ function fetcher<T = any>(url: string, method: ValidMethods = 'GET', rawData?: a
 
     return new Promise<T>(async (resolve) => {
         try {
-            const res = await fetch(process.env.SERVER_URL + url, options);
+            const res = await fetch(process.env.SERVER_URL + '/api/Books', options);
             const data = await res.json();
 
             if (res.ok) {
                 resolve(data);
             } else {
+                console.error(`Request to ${url} failed with status ${res.status}`);
                 console.error(data);
+
                 Swal.fire({
                     title: 'Server error :(',
                     icon: 'error',
-                    text: data.message,
+                    text: data.message || 'Unknown error',
                     timer: 6000,
                 });
             }
         } catch (error) {
             const err = error as Error;
+            console.error(`Network error during request to ${url}`);
             console.error(err);
+
             Swal.fire({
                 title: 'Networking error :(',
                 icon: 'error',
-                text: err.message,
+                text: err.message || 'Unknown error',
                 timer: 6000,
             });
         }

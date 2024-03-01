@@ -1,9 +1,8 @@
 import express from 'express';
 import cors from 'cors';
-import authRoutes from './routes/authRoutes'; 
-import bookRoutes from './routes/bookRoutes'; 
-
-import { tokenCheck } from './middlewares/tokenCheck'; 
+import authRoutes from './routes/authRoutes';
+import bookRoutes from './routes/bookRoutes';
+import { tokenCheck } from './middlewares/tokenCheck';
 
 const isProduction = process.env.NODE_ENV === 'production';
 const isDevelopment = process.env.NODE_ENV === 'development';
@@ -22,7 +21,9 @@ app.use(express.json());
 
 app.use('/api/secure', tokenCheck);
 
-app.use('/api', routes);
+app.use('/api', authRoutes);
+
+app.use('/api/books', bookRoutes);
 
 app.get('/api/hello', (req, res) => {
     res.json({ message: 'World' });
@@ -36,4 +37,6 @@ if (isProduction) {
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {console.log(`Server is running on port ${PORT}`);});
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
