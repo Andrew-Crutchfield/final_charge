@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { POST } from '../services/fetcher';
 
-const Home: React.FC = () => {
+const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,7 +13,7 @@ const Home: React.FC = () => {
       const response = await POST('/auth/login', { email, password });
       if (response.token) {
         localStorage.setItem('token', response.token);
-        navigate('/details');  
+        navigate('/details');
       } else {
         setErrorMessage(response.message || 'Failed to log in');
       }
@@ -32,7 +32,7 @@ const Home: React.FC = () => {
       const response = await POST('/auth/register', { email, password });
       if (response.token) {
         localStorage.setItem('token', response.token);
-        navigate('/details');  
+        navigate('/details');
       } else {
         setErrorMessage('Failed to register');
       }
@@ -44,18 +44,25 @@ const Home: React.FC = () => {
 
   return (
     <div>
-      <h1>Welcome to the Home Page</h1>
-
+      <h1>Welcome to Our HomePage</h1>
       <div>Login or Register to Continue</div>
       {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
       <label>Email: </label>
-      <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} />
+      <input
+        type="text"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
       <label>Password: </label>
-      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+      <input
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
       <button onClick={handleLogin}>Login</button>
       <button onClick={handleRegister}>Register</button>
     </div>
   );
 };
 
-export default Home;
+export default HomePage;

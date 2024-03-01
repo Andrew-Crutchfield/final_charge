@@ -1,6 +1,6 @@
 import express from 'express';
 import { getAllBooks, getBookById, createBook, updateBook, deleteBook } from '../controllers/bookController';
-import { tokenCheck } from '../middlewares/tokenCheck'; 
+import tokenCheck from '../middlewares/tokenCheck'; 
 
 const router = express.Router();
 

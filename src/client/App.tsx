@@ -7,7 +7,7 @@ const App: React.FC<AppProps> = () => {
     const [data, setBooks] = useState('');
 
     useEffect(() => {
-        GET('/api/books').then(setBooks);
+        GET('/api/Books').then(setBooks);
     }, []);
 
     return (

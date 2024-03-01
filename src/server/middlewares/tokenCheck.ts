@@ -1,26 +1,23 @@
-import { RequestHandler } from 'express';
-import jwt from 'jsonwebtoken';
-import config from '../config/config';
-import { Payload } from '../types';
+import { Request, Response, NextFunction } from 'express';
+import jwt, { Secret } from 'jsonwebtoken';
+import { Payload } from '../types/index'; 
 
-export const tokenCheck: RequestHandler = (req, res, next) => {
-    const authHeader = req.headers.authorization;
+const tokenCheck = (req: Request, res: Response, next: NextFunction) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
 
-    if (!authHeader) {
-        return res.status(401).json({ message: 'Missing auth header' });
-    }
+  if (token == null) return res.sendStatus(401);
 
-    const [type, token] = authHeader.split(' ');
+  const tokenSecret: Secret = process.env.TOKEN_SECRET as Secret;
 
-    if (!type || !token || type.toLowerCase() !== 'bearer') {
-        return res.status(401).json({ message: 'Missing token' });
-    }
-
-    try {
-        const payload = jwt.verify(token, config.jwt.secret) as Payload;
-        req.user = payload;
-        next();
-    } catch (error) {
-        return res.status(401).json({ message: 'Expired token' });
-    }
+  try {
+    const decoded = jwt.verify(token, tokenSecret) as Payload;
+    req.user = decoded;
+    next();
+  } catch (err) {
+    console.error(err);
+    return res.sendStatus(403);
+  }
 };
+
+export default tokenCheck;
