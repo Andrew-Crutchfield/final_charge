@@ -163,3 +163,4 @@ Webpack has been the go-to bundler for many projects over the years. However, ES
 ## Contributions
 
 Feel free to raise issues, send pull requests, or provide feedback to improve this boilerplate. We welcome collaboration and suggestions to make this a more effective learning tool for our students and the community.
+# final_charge2
