@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { POST } from '../services/fetcher';
 
-const Home: React.FC = () => {
+const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -11,7 +11,6 @@ const Home: React.FC = () => {
   const handleLogin = async () => {
     try {
       const response = await POST('/auth/login', { email, password });
-
       if (response.token) {
         localStorage.setItem('token', response.token);
         navigate('/bookdetails');
@@ -20,7 +19,6 @@ const Home: React.FC = () => {
       }
     } catch (error) {
       console.error('Login failed', error);
-
       if (error instanceof Error) {
         setErrorMessage(error.message || 'Login failed due to an unexpected error');
       } else {
@@ -34,7 +32,7 @@ const Home: React.FC = () => {
       const response = await POST('/auth/register', { email, password });
       if (response.token) {
         localStorage.setItem('token', response.token);
-        navigate('/details');
+        navigate('/bookdetails');
       } else {
         setErrorMessage('Failed to register');
       }
@@ -67,4 +65,4 @@ const Home: React.FC = () => {
   );
 };
 
-export default Home;
+export default HomePage;
