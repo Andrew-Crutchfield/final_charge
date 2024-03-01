@@ -9,7 +9,7 @@ interface Book {
   price: number;
 }
 
-const BookDetails: React.FC = () => {
+const details: React.FC = () => {
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -50,4 +50,4 @@ const BookDetails: React.FC = () => {
   );
 };
 
-export default BookDetails;
+export default details;
