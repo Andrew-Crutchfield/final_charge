@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
-import routes from './routes'; 
+import authRoutes from './routes/authRoutes'; 
+import bookRoutes from './routes/bookRoutes'; 
+
 import { tokenCheck } from './middlewares/tokenCheck'; 
 
 const isProduction = process.env.NODE_ENV === 'production';

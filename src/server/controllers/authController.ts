@@ -3,36 +3,77 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import config from '../config/config';
 import { query } from '../db/db';
-import { User } from '../types';
+import { User } from '../types/index';
 
+
+export const authenticateUser = async (email: string, password: string): Promise<{ success: boolean; user?: User }> => {
+    try {
+        const [results] = await query<User[]>('SELECT id, email, password, role, created_at FROM Users WHERE email = ?', [email]);
+
+        if (!results || results.length === 0) {
+            return { success: false, user: undefined };
+        }
+
+        const user = results[0];
+
+        if (!user || !user.password) {
+            return { success: false, user: undefined };
+        }
+
+        const passwordMatch = await bcrypt.compare(password, user.password);
+
+        if (passwordMatch) {
+            return { success: true, user };
+        } else {
+            return { success: false, user: undefined };
+        }
+    } catch (error) {
+        console.error('Error authenticating user', error);
+        return { success: false, user: undefined };
+    }
+};
 
 export const loginUser = async (req: Request, res: Response) => {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-        return res.status(400).json({ message: 'Invalid input' });
-    }
-
     try {
-        const [user] = await query<User>('SELECT * FROM Users WHERE email = ?', [email]);
+        const { email, password } = req.body;
+        const authenticationResult = await authenticateUser(email, password);
 
-        if (!user) {
-            return res.status(401).json({ message: 'Invalid email or password' });
+        if (authenticationResult.success) {
+            const { email, role } = authenticationResult.user!;
+            const token: string = jwt.sign({ email, role }, config.jwt.secret, { expiresIn: config.jwt.expiration });
+            res.json({ token });
+        } else {
+            res.status(401).json({ message: 'Invalid email or password' });
         }
-
-        const isPasswordValid = await bcrypt.compare(password, user.hash);
-
-        if (!isPasswordValid) {
-            return res.status(401).json({ message: 'Invalid email or password' });
-        }
-
-        const token = jwt.sign({ userId: user.id, email: user.email, role: user.role }, config.jwt.secret, {
-            expiresIn: config.jwt.expiration,
-        });
-
-        res.status(200).json({ token });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        console.error('Login failed', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+export const registerUser = async (req: Request, res: Response) => {
+    try {
+        const { email, password } = req.body;
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const queryResult: { affectedRows?: number }[] = await query('INSERT INTO Users (email, password, role, _created) VALUES (?, ?, ?, ?)', [
+            email,
+            hashedPassword,
+            'user',
+            new Date(),
+        ]);
+
+        const affectedRows: number = queryResult.reduce((sum, result) => sum + (result.affectedRows || 0), 0);
+
+        if (affectedRows > 0) {
+            const { email, role } = req.body;
+            const token: string = jwt.sign({ email, role }, config.jwt.secret, { expiresIn: config.jwt.expiration });
+            res.json({ token });
+        } else {
+            res.status(400).json({ message: 'Failed to register' });
+        }
+    } catch (error) {
+        console.error('Registration failed', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 };
