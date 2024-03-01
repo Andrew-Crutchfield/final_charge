@@ -10,15 +10,17 @@ const HomePage: React.FC = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await POST('/auth/login', { email, password });
+      const response = await POST('/api/auth/login', { email, password });
+
       if (response.token) {
         localStorage.setItem('token', response.token);
-        navigate('/details');
+        navigate('/bookdetails');
       } else {
         setErrorMessage(response.message || 'Failed to log in');
       }
     } catch (error) {
       console.error('Login failed', error);
+
       if (error instanceof Error) {
         setErrorMessage(error.message || 'Login failed due to an unexpected error');
       } else {
@@ -29,7 +31,7 @@ const HomePage: React.FC = () => {
 
   const handleRegister = async () => {
     try {
-      const response = await POST('/auth/register', { email, password });
+      const response = await POST('/api/auth/register', { email, password });
       if (response.token) {
         localStorage.setItem('token', response.token);
         navigate('/details');

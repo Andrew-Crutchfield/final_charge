@@ -7,7 +7,7 @@ import { User } from '../types/index';
 
 export const authenticateUser = async (email: string, password: string): Promise<{ success: boolean; user?: User }> => {
     try {
-        const [results] = await query<User[]>('SELECT id, email, password, role, created_at FROM Users WHERE email = ?', [email]);
+        const results: User[] = await query<User[]>('SELECT id, email, password, role, created_at FROM Users WHERE email = ?', [email]);
 
         if (!results || results.length === 0) {
             return { success: false, user: undefined };

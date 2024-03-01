@@ -16,6 +16,7 @@ if (isDevelopment) {
 if (isProduction) {
     app.use(express.static('public'));
 }
+app.use('/api', authRoutes);
 
 app.use(express.json());
 

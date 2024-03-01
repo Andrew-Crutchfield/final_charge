@@ -2,53 +2,52 @@ import Swal from 'sweetalert2';
 
 type ValidMethods = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
-async function fetcher<T = any>(url: string, method: ValidMethods = 'GET', rawData?: any): Promise<T> {
-  const headers: HeadersInit = {};
+function fetcher<T = any>(url: string, method: ValidMethods = 'GET', rawData?: any) {
+    const headers: HeadersInit = {};
 
-  const token = localStorage.getItem("token");
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
+    const options: RequestInit = {
+        method,
+        headers,
+    };
 
-  if (['POST', 'PUT'].includes(method)) {
-    headers['Content-Type'] = 'application/json';
-  }
-
-  const options: RequestInit = {
-    method,
-    headers,
-    body: rawData ? JSON.stringify(rawData) : undefined,
-  };
-
-  try {
-    const fullUrl = `${process.env.SERVER_URL}${url}`;
-    const res = await fetch(fullUrl, options);
-
-    const contentType = res.headers.get('content-type');
-    
-    if (!res.ok) {
-      const errorData = await res.json();
-      throw new Error(errorData.message || 'Server responded with an error');
-    } else if (contentType && contentType.includes('application/json')) {
-      const data = await res.json();
-      console.log('Server response:', data);
-      return data;
-    } else {
-      throw new Error('Expected JSON response');
+    if (method === 'POST' || method === 'PUT') {
+        headers['Content-Type'] = 'application/json';
+        options.body = JSON.stringify(rawData);
     }
-  } catch (error) {
-    const err = error as Error;
-    console.error('Error fetching data:', err);
 
-    Swal.fire({
-      title: 'Error',
-      icon: 'error',
-      text: err.message,
-      timer: 6000,
+    return new Promise<T>(async (resolve) => {
+        try {
+            const apiUrl = process.env.SERVER_URL || 'http://localhost:3000';
+            const res = await fetch(apiUrl + url, options);
+            
+            const data = await res.json();
+
+            if (res.ok) {
+                resolve(data);
+            } else {
+                console.error(`Request to ${url} failed with status ${res.status}`);
+                console.error(data);
+
+                Swal.fire({
+                    title: 'Server error :(',
+                    icon: 'error',
+                    text: data.message || 'Unknown error',
+                    timer: 6000,
+                });
+            }
+        } catch (error) {
+            const err = error as Error;
+            console.error(`Network error during request to ${url}`);
+            console.error(err);
+
+            Swal.fire({
+                title: 'Networking error :(',
+                icon: 'error',
+                text: err.message || 'Unknown error',
+                timer: 6000,
+            });
+        }
     });
-
-    throw err;
-  }
 }
 
 export const GET = <T = any>(url: string) => fetcher<T>(url);

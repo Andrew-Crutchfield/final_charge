@@ -13,7 +13,7 @@ const pool = mysql.createPool({
   queueLimit: 0,
 });
 
-export const query = async <T = any>(sql: string, params: any[] = []): Promise<T[]> => {
-    const [rows] = await pool.execute(sql, params);
-    return rows as T[];
+export const query = async <T = ResultSetHeader>(sql: string, params: any[] = []): Promise<T> => {
+  const [rows] = await pool.execute(sql, params);
+  return rows as T;
 };

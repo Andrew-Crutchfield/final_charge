@@ -5,7 +5,7 @@ export interface User {
     role: string;
     created_at: Date;
 }
-  
+
 export interface Category {
     id: number;
     name: string;
@@ -31,4 +31,9 @@ declare global {
             user: Payload;
         }
     }
+}
+export interface UserPayload {
+    id: number;
+    username: string;
+    email:string;
 }
