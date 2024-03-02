@@ -17,13 +17,13 @@ export const authenticateUser = async (email: string, password: string): Promise
     const [results] = await query<User[]>('SELECT id, email, password, role, created_at FROM Users WHERE email = ?', [email]);
 
     if (!results || (Array.isArray(results) && results.length === 0)) {
-      return { success: false, user: undefined };
+      return { success: false, user: undefined }; 
     }
 
     const user = Array.isArray(results) ? results[0] : results;
 
     if (!user || !user.password) {
-      return { success: false, user: undefined };
+      return { success: false, user: undefined }; 
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
@@ -31,7 +31,7 @@ export const authenticateUser = async (email: string, password: string): Promise
     if (passwordMatch) {
       return { success: true, user };
     } else {
-      return { success: false, user: undefined };
+      return { success: false, user: undefined }; 
     }
   } catch (error) {
     console.error('Error authenticating user', error);
@@ -49,10 +49,9 @@ export const loginUser = async (req: Request, res: Response) => {
     const authenticationResult = await authenticateUser(email, password);
 
     if (authenticationResult.success) {
-      const role = authenticationResult.user?.role || 'user';
-      const token: string = jwt.sign({ email, role }, config.jwt.secret, { expiresIn: config.jwt.expiration });
+      const token: string = jwt.sign({ email, role: authenticationResult.user?.role }, config.jwt.secret, { expiresIn: config.jwt.expiration });
       console.log('Successfully logged in. Sending token:', token);
-      res.json({ token, role }); 
+      res.json({ token });
     } else {
       console.log('Invalid email or password');
       res.status(401).json({ message: 'Invalid email or password' });

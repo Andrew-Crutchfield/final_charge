@@ -31,7 +31,6 @@ export const getBookById = async (req: Request, res: Response) => {
   }
 };
 
-
 export const createBook = async (req: Request, res: Response) => {
   try {
     const { title, author, categoryid, price } = req.body;
@@ -53,13 +52,12 @@ export const createBook = async (req: Request, res: Response) => {
   }
 };
 
-
 export const updateBook = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { title, author, categoryid, price } = req.body;
     const sql = 'UPDATE books SET title = ?, author = ?, categoryid = ?, price = ? WHERE id = ?';
-    const safePrice = price !== undefined ? price : null; // Ensure price is not undefined
+    const safePrice = price !== undefined ? price : null; 
     
     const result = await query<ResultSetHeader>(sql, [title, author, categoryid, safePrice, id]);
 
@@ -73,7 +71,6 @@ export const updateBook = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
-
 
 export const deleteBook = async (req: Request, res: Response) => {
   try {

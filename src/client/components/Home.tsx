@@ -13,7 +13,6 @@ const HomePage: React.FC = () => {
       const response = await POST('/auth/login', { email, password });
       if (response.token) {
         localStorage.setItem('token', response.token);
-        localStorage.setItem('role', response.role); 
         navigate('/bookdetails');
       } else {
         setErrorMessage(response.message || 'Failed to log in');
@@ -49,9 +48,17 @@ const HomePage: React.FC = () => {
       <div>Login or Register to Continue</div>
       {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
       <label>Email: </label>
-      <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} />
+      <input
+        type="text"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
       <label>Password: </label>
-      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+      <input
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
       <button onClick={handleLogin}>Login</button>
       <button onClick={handleRegister}>Register</button>
     </div>
