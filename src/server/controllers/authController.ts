@@ -61,24 +61,21 @@ export const loginUser = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
 export const registerUser = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const queryResult: { affectedRows?: number }[] = await query('INSERT INTO Users (email, password, role, _created) VALUES (?, ?, ?, ?)', [
+    const queryResult: { affectedRows?: number } = await query('INSERT INTO Users (email, password, role, _created) VALUES (?, ?, ?, ?)', [
       email,
       hashedPassword,
       'user',
       new Date(),
     ]);
 
-    const affectedRows: number = queryResult.reduce((sum, result) => sum + (result.affectedRows || 0), 0);
-
-    if (affectedRows > 0) {
-      const token: string = jwt.sign({ email, role: 'user' }, config.jwt.secret, { expiresIn: config.jwt.expiration });
+    if (queryResult.affectedRows && queryResult.affectedRows > 0) {
+      const token: string = jwt.sign({ email }, config.jwt.secret, { expiresIn: config.jwt.expiration });
       res.json({ token });
     } else {
       res.status(400).json({ message: 'Failed to register' });

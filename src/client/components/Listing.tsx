@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { GET, POST, DELETE, PUT } from '../services/fetcher';
-import PrivateWrapper from './PrivateWrapper'; 
-import jwt from 'jsonwebtoken';
+import { GET, POST, DELETE, PUT } from '../services/fetcher'; 
+
 interface Book {
   id: number;
   title: string;
@@ -25,22 +24,8 @@ const BookListing: React.FC = () => {
   };
 
   useEffect(() => {
-    const fetchBooksAndCheckRole = async () => {
-      await fetchBooks();
-
-      // Check the user's role here
-      const token = localStorage.getItem('token');
-      const decodedToken: { role: string } = jwt.decode(token as string) as { role: string };
-
-      if (decodedToken.role !== 'admin') {
-        // Redirect or handle unauthorized access as needed
-        console.error('Unauthorized access');
-      }
-    };
-
-    fetchBooksAndCheckRole();
+    fetchBooks();
   }, []); 
-
 
   const handleAddBook = async () => {
     try {
@@ -99,12 +84,11 @@ const BookListing: React.FC = () => {
       console.error('Error deleting book', error);
     }
   };
-  return (
-    <PrivateWrapper requiredRole="admin">
-      <div>
-        <h1>Book Listing</h1>
-        <Link to="/bookdetails">Go to Book Details</Link>
 
+  return (
+    <div>
+      <h1>Book Listing</h1>
+      <Link to="/bookdetails">Go to Book Details</Link>
 
       <h2>{editingBook ? 'Edit Book' : 'Add a New Book'}</h2>
       <input
@@ -144,8 +128,7 @@ const BookListing: React.FC = () => {
           </li>
         ))}
       </ul>
-      </div>
-    </PrivateWrapper>
+    </div>
   );
 };
 
